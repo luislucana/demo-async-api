@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
 
@@ -51,7 +53,7 @@ public class EmployeeImageController {
 	}
 
 	@RequestMapping(method = { RequestMethod.POST, RequestMethod.PUT }, consumes = { "multipart/form-data" })
-	Callable<ResponseEntity<?>> write(@PathVariable Long id, @RequestParam("file") MultipartFile file)
+	Callable<ResponseEntity<?>> write(HttpServletRequest request, @PathVariable Long id, @RequestParam("file") MultipartFile file)
 			throws Exception {
 		return () -> this.repository.findById(id).map(employee -> {
 			File fileForEmployee = null;
@@ -61,6 +63,10 @@ public class EmployeeImageController {
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
+
+			Enumeration<String> attributeNames = request.getAsyncContext().getRequest().getAttributeNames();
+			System.out.println(attributeNames);
+
 
 			try (InputStream in = file.getInputStream(); OutputStream out = new FileOutputStream(fileForEmployee)) {
 				FileCopyUtils.copy(in, out);
