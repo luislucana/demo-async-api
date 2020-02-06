@@ -5,12 +5,15 @@ import br.com.async.repository.EmployeeRepository;
 import br.com.async.web.exception.RecordNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 
 
 @RestController
@@ -26,6 +29,24 @@ public class EmployeeRESTController {
 
 	public void setRepository(EmployeeRepository repository) {
 		this.repository = repository;
+	}
+
+	@GetMapping("/async-deferredresult")
+	public DeferredResult<ResponseEntity<?>> handleReqDefResult() {
+		System.out.println("Received async-deferredresult request");
+		DeferredResult<ResponseEntity<?>> output = new DeferredResult<>();
+
+		ForkJoinPool.commonPool().submit(() -> {
+			System.out.println("Processing in separate thread");
+			try {
+				Thread.sleep(6000);
+			} catch (InterruptedException e) {
+			}
+			output.setResult(ResponseEntity.ok("ok"));
+		});
+
+		System.out.println("servlet thread freed");
+		return output;
 	}
 
 	@GetMapping(value = "/employees")

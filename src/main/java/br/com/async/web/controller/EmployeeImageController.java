@@ -10,8 +10,10 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -19,6 +21,7 @@ import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ForkJoinPool;
 
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
@@ -51,7 +54,13 @@ public class EmployeeImageController {
 	Callable<ResponseEntity<?>> write(@PathVariable Long id, @RequestParam("file") MultipartFile file)
 			throws Exception {
 		return () -> this.repository.findById(id).map(employee -> {
-			File fileForEmployee = fileFor(employee);
+			File fileForEmployee = null;
+
+			try {
+				fileForEmployee = uploadPath(employee, file);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 
 			try (InputStream in = file.getInputStream(); OutputStream out = new FileOutputStream(fileForEmployee)) {
 				FileCopyUtils.copy(in, out);
@@ -90,12 +99,14 @@ public class EmployeeImageController {
 	}
 
 	private File fileFor(Employee e) {
-		return new File(this.uploadDirRoot, Long.toString(e.getId()));
+		File uploadPath = Paths.get(this.uploadDirRoot.getPath(), e.getId().toString()).toFile();
+
+		return new File(uploadPath.getAbsolutePath(), Long.toString(e.getId()) + ".jpg");
 	}
 	
 	private File uploadPath(Employee e, MultipartFile file) throws IOException {
 		File uploadPath = Paths.get(this.uploadDirRoot.getPath(), e.getId().toString()).toFile();
-		if(uploadPath.exists() == false) {
+		if (uploadPath.exists() == false) {
 			uploadPath.mkdirs();
 		}
 		return new File(uploadPath.getAbsolutePath(), file.getOriginalFilename());
