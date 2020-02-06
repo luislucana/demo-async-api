@@ -1,7 +1,9 @@
 package br.com.async.web.controller;
 
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import br.com.async.model.EmployeeAddresses;
 import br.com.async.model.EmployeeNames;
@@ -10,9 +12,18 @@ import br.com.async.service.AsyncService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.context.request.async.DeferredResult;
 
 
 @RestController
@@ -40,5 +51,33 @@ public class AsyncController {
 		log.info("EmployeeAddress--> " + employeeAddress.get());
 		log.info("EmployeeName--> " + employeeName.get());
 		log.info("EmployeePhone--> " + employeePhone.get());
+	}
+
+	@GetMapping(path = "/testingAsync")
+	public DeferredResult<String> value() throws ExecutionException, InterruptedException, TimeoutException {
+		AsyncRestTemplate restTemplate = new AsyncRestTemplate();
+		String baseUrl = "http://localhost:8081/addresses";
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		String value = "";
+
+		HttpEntity entity = new HttpEntity("parameters", requestHeaders);
+		final DeferredResult<String> result = new DeferredResult<>();
+		ListenableFuture<ResponseEntity<EmployeeAddresses>> futureEntity = restTemplate.getForEntity(baseUrl, EmployeeAddresses.class);
+
+		futureEntity.addCallback(new ListenableFutureCallback<ResponseEntity<EmployeeAddresses>>() {
+			@Override
+			public void onSuccess(ResponseEntity<EmployeeAddresses> resultado) {
+				System.out.println(resultado.getBody().toString());
+				result.setResult(resultado.getBody().toString());
+			}
+
+			@Override
+			public void onFailure(Throwable ex) {
+				result.setErrorResult(ex.getMessage());
+			}
+		});
+
+		return result;
 	}
 }

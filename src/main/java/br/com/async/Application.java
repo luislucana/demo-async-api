@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
+ * https://www.thetechnojournals.com/2019/10/asynchronous-rest-service.html
+ * https://www.baeldung.com/async-http-client
  * https://howtodoinjava.com/spring-boot2/rest/enableasync-async-controller/
  * https://spring.io/blog/2012/05/16/spring-mvc-3-2-preview-chat-sample/
  * https://howtodoinjava.com/spring-restful/multipart-upload-download-example/

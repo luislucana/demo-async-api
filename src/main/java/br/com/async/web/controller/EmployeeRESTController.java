@@ -39,7 +39,8 @@ public class EmployeeRESTController {
 		ForkJoinPool.commonPool().submit(() -> {
 			System.out.println("Processing in separate thread");
 			try {
-				Thread.sleep(6000);
+				//Thread.sleep(6000);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 			}
 			output.setResult(ResponseEntity.ok("ok"));
