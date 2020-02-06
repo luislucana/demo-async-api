@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * https://howtodoinjava.com/spring-restful/multipart-upload-download-example/
+ * https://github.com/eugenp/tutorials/tree/master/spring-rest-http
  */
 //@EnableConfigurationProperties({
         //FileStorageProperties.class
