@@ -10,6 +10,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
@@ -52,9 +53,15 @@ public class EmployeeImageController {
 		}).orElseThrow(() -> new RecordNotFoundException("Image for available"));
 	}
 
+	@Async("asyncExecutor")
 	@RequestMapping(method = { RequestMethod.POST, RequestMethod.PUT }, consumes = { "multipart/form-data" })
 	Callable<ResponseEntity<?>> write(HttpServletRequest request, @PathVariable Long id, @RequestParam("file") MultipartFile file)
 			throws Exception {
+		boolean asyncSupported = request.isAsyncSupported();
+		boolean asyncStarted = request.isAsyncStarted();
+		System.out.println(asyncStarted);
+		System.out.println(asyncSupported);
+
 		return () -> this.repository.findById(id).map(employee -> {
 			File fileForEmployee = null;
 

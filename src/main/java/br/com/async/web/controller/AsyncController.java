@@ -67,16 +67,21 @@ public class AsyncController {
 		futureEntity.addCallback(new ListenableFutureCallback<ResponseEntity<EmployeeAddresses>>() {
 			@Override
 			public void onSuccess(ResponseEntity<EmployeeAddresses> resultado) {
+				System.out.println("Inicio do onSuccess");
 				System.out.println(resultado.getBody().toString());
 				result.setResult(resultado.getBody().toString());
+				System.out.println("Fim do onSuccess");
 			}
 
 			@Override
 			public void onFailure(Throwable ex) {
+				System.out.println("Inicio do onFailure");
 				result.setErrorResult(ex.getMessage());
+				System.out.println("Fim do onFailure");
 			}
 		});
 
+		System.out.println("fim do testingAsync!");
 		return result;
 	}
 }
