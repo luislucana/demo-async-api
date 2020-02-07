@@ -1,10 +1,5 @@
 package br.com.async.web.controller;
 
-import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-
 import br.com.async.model.EmployeeAddresses;
 import br.com.async.model.EmployeeNames;
 import br.com.async.model.EmployeePhone;
@@ -25,6 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 
 @RestController
 public class AsyncController {
@@ -35,8 +35,7 @@ public class AsyncController {
 	private AsyncService service;
 
 	@RequestMapping(value = "/testAsynch", method = RequestMethod.GET)
-	public void testAsynch() throws InterruptedException, ExecutionException 
-	{
+	public void testAsynch() throws InterruptedException, ExecutionException {
 		log.info("testAsynch Start");
 
 		CompletableFuture<EmployeeAddresses> employeeAddress = service.getEmployeeAddress();

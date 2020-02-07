@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
+ * https://www.javacodegeeks.com/2015/07/understanding-callable-and-spring-deferredresult.html
  * https://www.thetechnojournals.com/2019/10/asynchronous-rest-service.html
  * https://www.baeldung.com/async-http-client
  * https://howtodoinjava.com/spring-boot2/rest/enableasync-async-controller/
